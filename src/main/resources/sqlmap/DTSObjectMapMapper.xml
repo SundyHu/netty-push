@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSObjectMapMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSObjectMapDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="source_type" property="sourceType" jdbcType="VARCHAR" />
+	    <result column="source_object_id" property="sourceObjectId" jdbcType="VARCHAR" />
+	    <result column="source_object_data_id" property="sourceObjectDataId" jdbcType="INTEGER" />
+	    <result column="target_type" property="targetType" jdbcType="VARCHAR" />
+	    <result column="target_object_id" property="targetObjectId" jdbcType="VARCHAR" />
+	    <result column="target_object_data_id" property="targetObjectDataId" jdbcType="INTEGER" />
+	    <result column="oper_user" property="operUser" jdbcType="VARCHAR"/>
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+
+	<insert id="inertBindMap">
+		insert into object_map(source_type,source_object_id,source_object_data_id,target_type,target_object_id,target_object_data_id,oper_user) 
+		values(#{sourceType},#{sourceObjectId},#{sourceObjectDataId},#{targetType},#{targetObjectId},#{targetObjectDataId},#{operUser})
+	</insert>
+
+	<select id="queryAll" resultMap="BaseResultMap">
+		select * from object_map
+	</select>
+	
+	<!-- version1
+	<select id="findBySourceType" resultType="java.util.Map">
+		select om.*,od.name1,od.name2 from
+		object_map om inner join object_data od on om.source_object_data_id=od.id
+		where om.source_type=#{metaType,jdbcType=VARCHAR}
+		<if test="id!=null and id!=''">
+			and source_object_id regexp #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="name!=null and name!=''">
+			and od.name2 regexp #{name,jdbcType=VARCHAR}
+		</if>  
+		limit 10
+	</select> -->
+	
+	<select id="findBySourceType" resultType="java.util.Map">
+		select t.*,odd.name2 as target_object_name from (select 
+		om.id,om.source_type,om.source_object_id,om.source_object_data_id,od.name2 as source_object_name,
+		om.target_type,om.target_object_id,om.target_object_data_id,om.oper_user,om.last_update_time
+		from object_map om inner join object_data od on om.source_object_data_id=od.id
+		where om.source_type=#{sourceType,jdbcType=VARCHAR}
+		<if test="operator!=null and operator!=''">
+			and om.oper_user=#{operator,jdbcType=VARCHAR}
+		</if>
+		<if test="targetType!=null and targetType!=''">
+			and om.target_type=#{targetType,jdbcType=VARCHAR}
+		</if>
+		<if test="id!=null and id!=''">
+			and om.source_object_id regexp #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="name!=null and name!=''">
+			and od.name2 regexp #{name,jdbcType=VARCHAR}
+		</if>
+		limit #{start,jdbcType=INTEGER},#{size,jdbcType=INTEGER} ) as t inner join object_data odd on t.target_object_data_id=odd.id
+	</select>
+	
+	<!-- 针对已关联的产品查询添加此逻辑 -->
+	<!-- <select id="findGoodsBySourceType" resultType="java.util.Map">
+		select t.*,odd.name2 as target_object_name from (select 
+		om.id,om.source_type,om.source_object_id,om.source_object_data_id,od.name2 as source_object_name,
+		om.target_type,om.target_object_id,om.target_object_data_id,om.oper_user,om.last_update_time,od.content
+		from object_map om inner join object_data od on om.source_object_data_id=od.id
+		where om.source_type=#{sourceType,jdbcType=VARCHAR}
+		<if test="targetType!=null and targetType!=''">
+			and om.target_type=#{targetType,jdbcType=VARCHAR}
+		</if>
+		<if test="id!=null and id!=''">
+			and om.source_object_id regexp #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="name!=null and name!=''">
+			and od.name2 regexp #{name,jdbcType=VARCHAR}
+		</if>
+		limit #{start,jdbcType=INTEGER},#{size,jdbcType=INTEGER} ) as t inner join object_data odd on t.target_object_data_id=odd.id
+	</select> -->
+	
+	<select id="findTotalBySourceType" resultType="java.util.Map">
+		select count(1) total
+		from object_map om inner join object_data od on om.source_object_data_id=od.id
+		where om.source_type=#{sourceType,jdbcType=VARCHAR}
+		<if test="operator!=null and operator!=''">
+			and om.oper_user=#{operator,jdbcType=VARCHAR}
+		</if>
+		<if test="targetType!=null and targetType!=''">
+			and om.target_type=#{targetType,jdbcType=VARCHAR}
+		</if>
+		<if test="id!=null and id!=''">
+			and om.source_object_id regexp #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="name!=null and name!=''">
+			and od.name2 regexp #{name,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="findMapByUniKey" resultMap="BaseResultMap">
+		select * from object_map where source_type=#{sourceType,jdbcType=VARCHAR} 
+		and source_object_id=#{sourceObjectId,jdbcType=VARCHAR} 
+		and target_type=#{targetType,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findById" resultMap="BaseResultMap">
+		select * from object_map where id=#{mapId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="queryBySourceId" resultType="java.util.Map">
+		select id from object_map where source_type=#{sourceType,jdbcType=VARCHAR}
+		and source_object_id=#{sourceObjectId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loadDistinctOperator" resultType="java.lang.String">
+		select distinct oper_user from object_map
+	</select>
+	
+	<select id="queryBySourceIds" resultType="java.util.Map">
+		select source_object_id from object_map where source_type=#{sourceType,jdbcType=VARCHAR}
+		<if test="targetType!=null and targetType!=''">
+			and target_type=#{targetType,jdbcType=VARCHAR}
+		</if>
+		and source_object_id in
+		<foreach collection="list" item="ids" index="index" open="(" close=")" separator=",">
+            #{ids,jdbcType=VARCHAR}
+        </foreach>
+	</select>
+</mapper>

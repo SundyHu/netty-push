@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSProcessLogMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSProcessLogDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="type" property="type" jdbcType="INTEGER" />
+	    <result column="content" property="content" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+
+	<insert id="insertLog" keyColumn="id" useGeneratedKeys="true">
+		insert into process_log(`type`,content) values(#{type,jdbcType=INTEGER},#{content,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="queryAll" resultMap="BaseResultMap" >
+		select * from process_log order by id desc
+	</select>
+	<select id="findByType" resultMap="BaseResultMap" >
+		select * from process_log where `type` = #{type,jdbcType=INTEGER} order by id desc
+	</select>
+	<select id="findById" resultMap="BaseResultMap">
+		select * from process_log where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="pageQueryByType" resultType="java.util.Map">
+		select id,content,create_time from process_log where `type` = #{type,jdbcType=INTEGER} 
+		order by id desc limit #{start,jdbcType=INTEGER},#{size,jdbcType=INTEGER}
+	</select>
+</mapper>

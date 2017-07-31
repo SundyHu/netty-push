@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSBusinessMetaMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSBusinessMetaDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="bind" property="bind" jdbcType="INTEGER" />
+	    <result column="override" property="override" jdbcType="INTEGER" />
+	    <result column="operator" property="operator" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert ignore into business_meta(name,bind,override,operator) values(#{name},#{bind},#{override},#{operator})
+	</insert>
+	<update id="update">
+		update business_meta set name=#{name},bind=#{bind},override=#{override},operator=#{operator} where id=#{id}
+	</update>
+	<select id="queryByParams" resultType="java.util.Map">
+		select * from business_meta order by id desc limit #{start},#{size}
+	</select>
+	<select id="queryToalbyParams" resultType="java.util.Map">
+		select count(id) total from business_meta
+	</select>
+	<select id="findById" resultType="java.util.Map">
+		select * from business_meta where id=#{id}
+	</select>
+	<select id="findDtoById" resultMap="BaseResultMap">
+		select * from business_meta where id=#{id}
+	</select>
+	<select id="queryAll" resultType="java.util.Map">
+		select id,name from business_meta
+	</select>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!-- mybatis配置  -->
+	
+	<properties resource="config.properties" />
+
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="useGeneratedKeys" value="false" />
+		<setting name="autoMappingBehavior" value="PARTIAL" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25" />
+		<setting name="safeRowBoundsEnabled" value="false" />
+		<setting name="mapUnderscoreToCamelCase" value="false" />
+		<setting name="localCacheScope" value="SESSION" />
+		<setting name="jdbcTypeForNull" value="OTHER" />
+		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
+	</settings>
+
+    <typeAliases>
+    	<!-- 别名  -->
+        <!-- <typeAlias alias="Cas" type="com.molbase.mybatis.cas.model.Cas"/> -->
+    </typeAliases>
+	
+    <environments default="development">
+        <environment id="dts">
+	        <transactionManager type="JDBC"/>
+	        <dataSource type="POOLED">
+		        <property name="driver" value="${db.dts.driver}"/>
+		        <property name="url" value="${db.dts.url}" />
+		        <property name="username" value="${db.dts.username}"/>
+		        <property name="password" value="${db.dts.password}"/>
+		        <!-- <property name="poolMaximumActiveConnections" value="${db.dts.maxConns}"/> -->
+	        </dataSource>
+        </environment>
+        
+        <environment id="molbase">
+	        <transactionManager type="JDBC"/>
+	        <dataSource type="POOLED">
+		        <property name="driver" value="${db.molbase.driver}"/>
+		        <property name="url" value="${db.molbase.url}" />
+		        <property name="username" value="${db.molbase.username}"/>
+		        <property name="password" value="${db.molbase.password}"/>
+	        </dataSource>
+        </environment>
+    </environments>
+    
+    <mappers>
+        <!-- <mapper resource="com/molbase/mybatis/spider/sqlmap/CommonDataMapper.xml"/> -->
+        <mapper resource="sqlmap/DTSBrokerMapper.xml"/>
+        <mapper resource="sqlmap/DTSObjectDataMapper.xml"/>
+        <mapper resource="sqlmap/DTSObjectMapMapper.xml"/>
+        <mapper resource="sqlmap/DTSObjectMetaMapper.xml"/>
+        <mapper resource="sqlmap/DTSProcessLogMapper.xml"/>
+        <mapper resource="sqlmap/DTSBusinessMapMapper.xml"/>
+        <mapper resource="sqlmap/DTSBusinessMetaMapper.xml"/>
+
+        <!-- <mapper class="com.molbase.mybatis.syntechem.SearchMolDataMapper"/> -->
+        <!-- <package name="com.molbase.dts.server.dao"/> --> <!-- 注册某个包下的mapper interface class -->
+    </mappers>
+</configuration>

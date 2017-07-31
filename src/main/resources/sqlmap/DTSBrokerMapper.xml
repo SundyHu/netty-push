@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSBrokerMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSBrokerDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="data_type" property="dataType" jdbcType="VARCHAR" />
+	    <result column="desc" property="desc" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from broker where id = #{brokerId,jdbcType=INTEGER}
+	</select>
+	
+	<update id="updateById" parameterType="com.molbase.dts.server.dto.DTSBrokerDto">
+           update broker set content = #{content} where id = #{id,jdbcType=INTEGER};
+    </update>
+	
+</mapper>

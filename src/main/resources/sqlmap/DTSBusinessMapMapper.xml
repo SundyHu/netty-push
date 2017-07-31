@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSBusinessMapMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSBusinessMapDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	    <result column="biz_id" property="bizId" jdbcType="INTEGER" />
+	    <result column="biz_name" property="bizName" jdbcType="VARCHAR" />
+	    <result column="bill_id" property="billId" jdbcType="INTEGER" />
+	    <result column="bill_name" property="billName" jdbcType="VARCHAR" />
+	    <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+	    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	    <result column="operator" property="operator" jdbcType="VARCHAR" />
+	    <result column="valid_date" property="validDate" jdbcType="DATE" />
+	    <result column="invalid_date" property="invalidDate" jdbcType="DATE" />
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+	
+	<resultMap id="ApiResultMap" type="com.molbase.dts.server.dto.DTSBusinessMapAPIDto">
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	    <result column="biz_id" property="bizId" jdbcType="INTEGER" />
+	    <result column="name" property="bizName" jdbcType="VARCHAR" />
+	    <result column="bill_id" property="billId" jdbcType="INTEGER" />
+	    <result column="bill_name" property="billName" jdbcType="VARCHAR" />
+	    <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+	    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert ignore into business_map(user_id,user_name,biz_id,bill_id,bill_name,customer_id,customer_name,status,operator) 
+		values(#{userId},#{userName},#{bizId},#{billId},#{billName},#{customerId},#{customerName},#{status},#{operator})
+	</insert>
+	<update id="statusUpdateById">
+		update business_map set status=#{status} where id=#{id}
+	</update>
+	<update id="deleteBizMap">
+		update business_map set status=4 where id=#{id}
+	</update>
+	
+	<select id="findByBizCustomerOne" resultMap="BaseResultMap">
+		select * from business_map where biz_id=#{bizId} and customer_id=#{customerId} and status &lt;= 3
+	</select>
+	<select id="findByBizUserCustomer" resultMap="BaseResultMap">
+		select * from business_map where biz_id=#{bizId} and customer_id=#{customerId} and user_id=#{userId} and status = 3
+	</select>
+	
+	<select id="findByBizBill" resultMap="BaseResultMap">
+		select * from business_map where biz_id=#{bizId} and bill_id=#{billId} and status &lt;= 2
+	</select>
+	<select id="findByBizUserId" resultMap="BaseResultMap">
+		select * from business_map where biz_id=#{bizId} and user_id=#{billId} and status &lt;= 2
+	</select>
+	<select id="findByBizBillUser" resultMap="BaseResultMap">
+		select * from business_map where biz_id=#{bizId} and status &lt;= 2
+		<if test="null!=billId"> and bill_id=#{billId}</if>
+		<if test="null!=userId"> and user_id=#{userId}</if>
+	</select>
+	
+	<update id="delByBizBill">
+		update business_map set status=3 where biz_id=#{bizId} and bill_id=#{billId} and status &lt;= 2
+	</update>
+	<update id="delByBizUser">
+		update business_map set status=3 where biz_id=#{bizId} and user_id=#{billId} and status &lt;= 2
+	</update>
+	<update id="delByBizBillUser">
+		update business_map set status=3 where biz_id=#{bizId} and status &lt;= 2
+		<if test="null!=billId"> and bill_id=#{billId}</if>
+		<if test="null!=userId"> and user_id=#{userId}</if>
+	</update>
+	
+	<update id="activeByBizBill">
+		update business_map set status=2 where biz_id=#{bizId} and bill_id=#{billId} and status &lt;= 2
+	</update>
+	<update id="reActiveBizMap">
+		update business_map set status=2 where biz_id=#{bizId} and user_id=#{userId} and customer_id=#{customerId} and bill_id=#{billId} and status=3
+	</update>
+	
+	<select id="apiLoadQuery" resultMap="ApiResultMap">
+		select b.user_id,b.user_name,b.biz_id,m.name,b.bill_id,b.bill_name,b.customer_id,b.customer_name 
+		from business_map b left join business_meta m on b.biz_id=m.id 
+		where 1=1 and b.status &lt;= 3
+		<if test="null!=bizId">
+			and b.biz_id = #{bizId}
+		</if>
+		<if test="null!=userId">
+			and b.user_id = #{userId}
+		</if>
+		<if test="null!=customerId">
+			and b.customer_id = #{customerId}
+		</if>
+		limit 20
+	</select>
+	
+	<select id="queryByParams" resultType="java.util.Map">
+		select b.*,m.name biz_name from business_map b left join business_meta m on b.biz_id=m.id where status &lt; 4
+		<if test="null!=bizId and bizId>0">
+			and b.biz_id = #{bizId}
+		</if>
+		<if test="null!=status and status>0">
+			and b.status = #{status}
+		</if>
+		<if test="field=='customer_id' and keyword!=''">
+			and b.customer_id = #{keyword}
+		</if>
+		<if test="field=='customer_name' and keyword!=''">
+			and b.customer_name regexp #{keyword}
+		</if>
+		<if test="field=='bill_id' and keyword!=''">
+			and b.bill_id = #{keyword}
+		</if>
+		<if test="field=='bill_name' and keyword!=''">
+			and b.bill_name regexp #{keyword}
+		</if>
+		order by b.id desc limit #{start},#{size}
+	</select>
+	<select id="queryToalbyParams" resultType="java.util.Map">
+		select count(id) total from business_map where status &lt; 4
+		<if test="null!=bizId and bizId>0">
+			and biz_id = #{bizId}
+		</if>
+		<if test="null!=status and status>0">
+			and status = #{status}
+		</if>
+		<if test="field=='customer_id' and keyword!=''">
+			and customer_id = #{keyword}
+		</if>
+		<if test="field=='customer_name' and keyword!=''">
+			and customer_name regexp #{keyword}
+		</if>
+		<if test="field=='bill_id' and keyword!=''">
+			and bill_id = #{keyword}
+		</if>
+		<if test="field=='bill_name' and keyword!=''">
+			and bill_name regexp #{keyword}
+		</if>
+	</select>
+</mapper>

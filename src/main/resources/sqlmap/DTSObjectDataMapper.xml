@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSObjectDataMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSObjectDataDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="name1" property="name1" jdbcType="VARCHAR" />
+	    <result column="name2" property="name2" jdbcType="VARCHAR" />
+	    <result column="name3" property="name3" jdbcType="VARCHAR" />
+	    <result column="content" property="content" jdbcType="VARCHAR" />
+	    <result column="object_meta_id" property="objectMetaId" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert ignore into object_data(`type`,name1,name2,name3,content,object_meta_id) 
+		values(#{type},#{name1},#{name2},#{name3},#{content},#{objectMetaId})
+	</insert>
+	
+	<update id="update">
+		update object_data set name2=#{name2},name3=#{name3},content=#{content} where id=#{id}
+	</update>
+	
+	<select id="findByTypeAndObjId" resultMap="BaseResultMap">
+		select * from object_data where `type`=#{type,jdbcType=VARCHAR} and name1=#{name1,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryObjectData" resultMap="BaseResultMap">
+		select * from object_data where `type`=#{type,jdbcType=VARCHAR}
+		<if test="null!=name1 and name1!=''">
+		and name1 regexp #{name1,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=name2 and name2!=''">
+		and name2 regexp #{name2,jdbcType=VARCHAR}
+		</if>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="queryObjectDataTotal" resultType="INTEGER">
+		select count(id) total from object_data where `type`=#{type,jdbcType=VARCHAR}
+		<if test="null!=name1 and name1!=''">
+		and name1 regexp #{name1,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=name2 and name2!=''">
+		and name2 regexp #{name2,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="queryObjectGoodsData" resultMap="BaseResultMap">
+		select * from object_data where `type`=#{type,jdbcType=VARCHAR}
+		<if test="null!=name1 and name1!=''">
+		and name1 regexp #{name1,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=name2 and name2!=''">
+		and name2 regexp #{name2,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=store_name and store_name!=''">
+		and content regexp #{store_name,jdbcType=VARCHAR}
+		</if>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="queryObjectGoodsDataTotal" resultType="INTEGER">
+		select count(id) total from object_data where `type`=#{type,jdbcType=VARCHAR}
+		<if test="null!=name1 and name1!=''">
+		and name1 regexp #{name1,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=name2 and name2!=''">
+		and name2 regexp #{name2,jdbcType=VARCHAR}
+		</if>
+		<if test="null!=store_name and store_name!=''">
+		and content regexp #{store_name,jdbcType=VARCHAR}
+		</if>
+	</select>
+</mapper>

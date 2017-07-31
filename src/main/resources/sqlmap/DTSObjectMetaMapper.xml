@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.molbase.dts.server.dao.DTSObjectMetaMapper">
+
+	<resultMap id="BaseResultMap" type="com.molbase.dts.server.dto.DTSObjectMetaDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="table_name" property="tableName" jdbcType="VARCHAR"/>
+		<result column="object_id_key" property="objectIdKey" jdbcType="VARCHAR"/>
+		<result column="index_key" property="indexKey" jdbcType="VARCHAR"/>
+		<result column="list_display_key" property="listDisplayKey" jdbcType="VARCHAR"/>
+		<result column="match_display_key" property="matchDisplayKey" jdbcType="VARCHAR"/>
+		<result column="content" property="content" jdbcType="VARCHAR"/>
+		<result column="version" property="version" jdbcType="VARCHAR"/>
+	    <result column="broker_id" property="brokerId" jdbcType="INTEGER"/>
+	    <result column="create_time" property="createTime" jdbcType="DATE" />
+	    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+	</resultMap>
+
+	<select id="queryAll" resultMap="BaseResultMap">
+		select * from object_meta;
+	</select>
+	
+	<select id="findByType" resultMap="BaseResultMap">
+		select * from object_meta where `type`=#{type,jdbcType=VARCHAR} limit 1
+	</select>
+</mapper>
