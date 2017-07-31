@@ -2,19 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.molbase.dts</groupId>
-	<artifactId>dts</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>com.plus.nettypush</groupId>
+	<artifactId>netty-push-server</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>dts</name>
+	<name>netty-push-server</name>
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
 		<dependency>
-			<groupId>Broker</groupId>
-			<artifactId>Broker</artifactId>
-			<version>0.0.1</version>
+			<groupId>com.plus.nettypush</groupId>
+			<artifactId>client</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp.jstl</groupId>
